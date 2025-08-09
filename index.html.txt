@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Flores para mi Moncho</title>
+    <style>
+        /* Reset y configuración base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f2f8ff 0%, #e8f7ea 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Contenedor principal */
+        #app {
+            width: 90vw;
+            height: 90vh;
+            max-width: 800px;
+            max-height: 600px;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ffffff 0%, #eef6ff 100%);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Título */
+        #titulo {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: clamp(24px, 4vw, 32px);
+            font-weight: bold;
+            color: #444;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Canvas */
+        #canvas-container {
+            flex: 1;
+            position: relative;
+            margin: 60px 20px 120px 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Frase */
+        #frase {
+            position: absolute;
+            bottom: 60px;
+            left: 20px;
+            right: 20px;
+            text-align: center;
+            font-size: clamp(14px, 2.5vw, 18px);
+            color: #555;
+            line-height: 1.4;
+            font-style: italic;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Botón */
+        #boton {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(145deg, #ff6b9a, #ff4f85);
+            color: white;
+            cursor: pointer;
+            box-shadow: 
+                0 4px 12px rgba(255, 107, 154, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        #boton:hover {
+            background: linear-gradient(145deg, #ff4f85, #ff3366);
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 
+                0 6px 16px rgba(255, 107, 154, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        #boton:active {
+            transform: translateX(-50%) translateY(0px);
+            box-shadow: 
+                0 2px 8px rgba(255, 107, 154, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            #app {
+                width: 95vw;
+                height: 95vh;
+                border-width: 2px;
+            }
+            
+            #canvas-container {
+                margin: 50px 15px 100px 15px;
+            }
+            
+            #frase {
+                bottom: 50px;
+                left: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="titulo">💐 Flores para mi Moncho 💐</div>
+        <div id="canvas-container">
+            <canvas id="c"></canvas>
+        </div>
+        <div id="frase"></div>
+        <button id="boton">🌸 Cambiar Flor 🌸</button>
+    </div>
+
+    <script>
+        (() => {
+            'use strict';
+
+            // Referencias a elementos del DOM
+            const canvas = document.getElementById('c');
+            const ctx = canvas.getContext('2d');
+            const fraseElem = document.getElementById('frase');
+            const boton = document.getElementById('boton');
+
+            // Configuración
+            const CONFIG = {
+                MIN_PETALS: 4,
+                MAX_PETALS: 12,
+                MIN_SIZE: 25,
+                MAX_SIZE: 70,
+                MIN_PETAL_LENGTH: 1.1,
+                MAX_PETAL_LENGTH: 2.0,
+                ANIMATION_DURATION: 500
+            };
+
+            // Lista de frases románticas
+            const frases = [
+                "Will you still love me when I'm no longer young and beautiful? – Lana del Rey",
+                "Cause you and I, we were born to die. – Lana del Rey",
+                "If you weren't mine, I'd be jealous of you. – Lana del Rey",
+                "I will love you till the end of time. – Lana del Rey",
+                "You're my religion, you're how I'm living. – Lana del Rey",
+                "Y si me caigo que sea pa' levantarme. – Canserbero",
+                "Amar no es un delito, pero sí lo es mentir. – Canserbero",
+                "El amor es tan bonito cuando se vive sanamente. – Canserbero",
+                "No hay nada más triste que un te extraño. – Canserbero",
+                "La vida es una sola, hay que vivirla bien. – Canserbero"
+            ];
+
+            // Paletas de colores
+            const COLORS = {
+                petals: ['#ff6b9a', '#ff9aa2', '#ffb3b3', '#caa6ff', '#9ad1ff', '#a8ffb0', '#ffd24d', '#ff8c42', '#ff6b6b', '#4ecdc4'],
+                centers: ['#ffd24d', '#ffdf80', '#ffb84d', '#ffe08a', '#fff176', '#ffcc02']
+            };
+
+            let currentFlower = null;
+            let isAnimating = false;
+
+            // Utilidades matemáticas
+            const utils = {
+                randInt: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
+                randFloat: (min, max) => Math.random() * (max - min) + min,
+                
+                hexToRgb: (hex) => {
+                    const h = hex.replace('#', '');
+                    const expandedHex = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+                    const bigint = parseInt(expandedHex, 16);
+                    return {
+                        r: (bigint >> 16) & 255,
+                        g: (bigint >> 8) & 255,
+                        b: bigint & 255
+                    };
+                },
+                
+                rgbToHex: (r, g, b) => {
+                    return '#' + [r, g, b]
+                        .map(v => Math.round(v).toString(16).padStart(2, '0'))
+                        .join('');
+                },
+                
+                adjustColor: (hex, amount) => {
+                    const { r, g, b } = utils.hexToRgb(hex);
+                    return utils.rgbToHex(
+                        Math.min(255, Math.max(0, r + amount)),
+                        Math.min(255, Math.max(0, g + amount)),
+                        Math.min(255, Math.max(0, b + amount))
+                    );
+                },
+                
+                randomChoice: (array) => array[Math.floor(Math.random() * array.length)]
+            };
+
+            // Gestión del canvas
+            const canvasManager = {
+                resize: () => {
+                    const container = canvas.parentElement;
+                    const rect = container.getBoundingClientRect();
+                    const dpr = window.devicePixelRatio || 1;
+                    
+                    canvas.width = rect.width * dpr;
+                    canvas.height = rect.height * dpr;
+                    
+                    ctx.scale(dpr, dpr);
+                    canvas.style.width = rect.width + 'px';
+                    canvas.style.height = rect.height + 'px';
+                    
+                    canvasManager.drawBackground();
+                },
+                
+                drawBackground: () => {
+                    const rect = canvas.getBoundingClientRect();
+                    const gradient = ctx.createLinearGradient(0, 0, 0, rect.height);
+                    gradient.addColorStop(0, '#f7fbff');
+                    gradient.addColorStop(0.5, '#fff5f8');
+                    gradient.addColorStop(1, '#e8f7ea');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, rect.width, rect.height);
+                    
+                    // Agregar puntos decorativos sutiles
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                    for (let i = 0; i < 20; i++) {
+                        const x = Math.random() * rect.width;
+                        const y = Math.random() * rect.height;
+                        const size = Math.random() * 2 + 1;
+                        ctx.beginPath();
+                        ctx.arc(x, y, size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            };
+
+            // Clase para las flores
+            class Flower {
+                constructor() {
+                    this.generateRandomProperties();
+                }
+                
+                generateRandomProperties() {
+                    this.petals = utils.randInt(CONFIG.MIN_PETALS, CONFIG.MAX_PETALS);
+                    this.size = utils.randInt(CONFIG.MIN_SIZE, CONFIG.MAX_SIZE);
+                    this.petalLength = utils.randFloat(CONFIG.MIN_PETAL_LENGTH, CONFIG.MAX_PETAL_LENGTH);
+                    this.petalColor = utils.randomChoice(COLORS.petals);
+                    this.centerColor = utils.randomChoice(COLORS.centers);
+                    this.rotation = Math.random() * Math.PI * 2;
+                    this.opacity = 1;
+                }
+                
+                draw(x, y, opacity = 1) {
+                    ctx.save();
+                    ctx.globalAlpha = opacity;
+                    ctx.translate(x, y);
+                    ctx.rotate(this.rotation);
+                    
+                    // Dibujar pétalos
+                    for (let i = 0; i < this.petals; i++) {
+                        ctx.save();
+                        ctx.rotate((i / this.petals) * Math.PI * 2);
+                        
+                        // Pétalo con gradiente
+                        ctx.beginPath();
+                        ctx.ellipse(
+                            this.size * this.petalLength, 0,
+                            this.size * 0.9, this.size * 0.45,
+                            Math.PI / 6, 0, Math.PI * 2
+                        );
+                        
+                        const petalGrad = ctx.createLinearGradient(
+                            this.size, -this.size * 0.5,
+                            this.size * this.petalLength, this.size * 0.5
+                        );
+                        petalGrad.addColorStop(0, this.petalColor);
+                        petalGrad.addColorStop(0.7, utils.adjustColor(this.petalColor, 20));
+                        petalGrad.addColorStop(1, utils.adjustColor(this.petalColor, 40));
+                        
+                        ctx.fillStyle = petalGrad;
+                        ctx.fill();
+                        
+                        // Sombra sutil en los pétalos
+                        ctx.strokeStyle = utils.adjustColor(this.petalColor, -30);
+                        ctx.lineWidth = 1;
+                        ctx.globalAlpha = opacity * 0.3;
+                        ctx.stroke();
+                        ctx.globalAlpha = opacity;
+                        
+                        ctx.restore();
+                    }
+                    
+                    // Centro de la flor
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size * 0.6, 0, Math.PI * 2);
+                    
+                    const centerGrad = ctx.createRadialGradient(
+                        -this.size * 0.2, -this.size * 0.2, this.size * 0.1,
+                        0, 0, this.size * 0.6
+                    );
+                    centerGrad.addColorStop(0, '#fff8c8');
+                    centerGrad.addColorStop(0.3, this.centerColor);
+                    centerGrad.addColorStop(0.8, utils.adjustColor(this.centerColor, -10));
+                    centerGrad.addColorStop(1, utils.adjustColor(this.centerColor, -30));
+                    
+                    ctx.fillStyle = centerGrad;
+                    ctx.fill();
+                    
+                    // Detalles del centro
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size * 0.3, 0, Math.PI * 2);
+                    ctx.fillStyle = utils.adjustColor(this.centerColor, 30);
+                    ctx.fill();
+                    
+                    ctx.restore();
+                }
+            }
+
+            // Animaciones
+            const animator = {
+                fadeIn: (flower, x, y, duration, callback) => {
+                    const startTime = Date.now();
+                    
+                    const animate = () => {
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const opacity = progress;
+                        
+                        canvasManager.drawBackground();
+                        flower.draw(x, y, opacity);
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        } else {
+                            callback && callback();
+                        }
+                    };
+                    
+                    animate();
+                }
+            };
+
+            // Gestor principal
+            const app = {
+                init: () => {
+                    canvasManager.resize();
+                    window.addEventListener('resize', canvasManager.resize);
+                    boton.addEventListener('click', app.cambiarFlor);
+                    app.cambiarFlor();
+                },
+                
+                cambiarFlor: () => {
+                    if (isAnimating) return;
+                    isAnimating = true;
+                    
+                    // Deshabilitar botón temporalmente
+                    boton.disabled = true;
+                    boton.style.opacity = '0.7';
+                    
+                    const rect = canvas.getBoundingClientRect();
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    // Crear nueva flor
+                    currentFlower = new Flower();
+                    
+                    // Cambiar frase
+                    app.cambiarFrase();
+                    
+                    // Animar entrada
+                    animator.fadeIn(currentFlower, centerX, centerY, CONFIG.ANIMATION_DURATION, () => {
+                        isAnimating = false;
+                        boton.disabled = false;
+                        boton.style.opacity = '1';
+                    });
+                },
+                
+                cambiarFrase: () => {
+                    const nuevaFrase = utils.randomChoice(frases);
+                    fraseElem.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        fraseElem.textContent = nuevaFrase;
+                        fraseElem.style.opacity = '1';
+                    }, 150);
+                }
+            };
+
+            // Estilos de transición para la frase
+            fraseElem.style.transition = 'opacity 0.3s ease';
+
+            // Inicializar aplicación
+            app.init();
+        })();
+    </script>
+</body>

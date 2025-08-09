@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Feliz Día del Padre</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #ffe0f0, #d0f0e0);
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      color: #b0005f;
+      margin-top: 20px;
+      font-size: 2.2em;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .carousel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: calc(100vh - 80px);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .photo-frame {
+      position: relative;
+      max-width: 90vw;
+      max-height: 80vh;
+      margin-bottom: 10px;
+    }
+
+    .main-photo {
+      width: 100%;
+      height: auto;
+      max-height: 70vh;
+      border-radius: 20px;
+      border: 10px solid #ffccd5;
+      box-shadow: 0 0 30px rgba(0,0,0,0.3);
+    }
+
+    .decor-icon {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      animation: float 6s infinite alternate;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-20px) scale(1.1); }
+    }
+
+    .caption {
+      font-size: 1.4em;
+      margin: 10px auto;
+      color: #5e2b2b;
+      background: rgba(255,255,255,0.8);
+      padding: 15px 35px;
+      border-radius: 25px;
+      font-weight: bold;
+      max-width: 90%;
+    }
+
+    .btn {
+      background-color: #ff7eb3;
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      font-size: 1.2em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background-color: #ff4d91;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Feliz Día del Padre, te amo mucho ❤️</h1>
+
+  <div class="carousel">
+    <div class="photo-frame" id="photoFrame">
+      <img id="mainPhoto" class="main-photo" src="" alt="Foto">
+    </div>
+    <div id="caption" class="caption">Mensaje inicial</div>
+    <button class="btn" onclick="nextSlide()">Siguiente Foto ➡️</button>
+  </div>
+
+  <script>
+    const photos = [
+      {
+        src: "https://scontent.feoh14-1.fna.fbcdn.net/v/t1.6435-9/146242416_10214777355346922_3687612476362354384_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeE1XzS35JTeTcF1g2egMtHnZzfkIvi3lWFnN-Qi-LeVYY15FQAuc5U8FcPqrTqoPyKQRE_wBZOHgU_oztRFpQJU&_nc_ohc=AuRXH5Yd3_gQ7kNvwGekw0e&_nc_oc=AdkNojBtHygcinNKtumxQA8kX4F96V937zVi0awEDGvBPrAQjs3uF6go6aGHb7z1gHs&_nc_zt=23&_nc_ht=scontent.feoh14-1.fna&_nc_gid=KvIHzvmYIY6D7WgZbkUR2w&oh=00_AfWzcp0PPetpJmQIB2bU53wLcq4KrqngwNJzGDBDMBMIqg&oe=68BE22D4",
+        caption: "Gracias por enseñarme con tu ejemplo a ser fuerte, amable y valiente cada día de mi vida."
+      },
+      {
+        src: "https://scontent.feoh14-1.fna.fbcdn.net/v/t39.30808-6/462691348_10220473190739247_8932213328839892506_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=cf85f3&_nc_eui2=AeHS8aIcPkyI_KGGx4A8RD3GmT6E5aWLEvuZPoTlpYsS-1-Ot6WNklEc69_DlABFY9liFZWl3Obezk4Ket6tMucU&_nc_ohc=jL8FwsgvJ6YQ7kNvwFqTH4q&_nc_oc=AdnM6H-zqHFzi6V5JcexQc266IFpeQiSZFfI20ShL3QD_dK4F7ZZobWu1cSy3TTT610&_nc_zt=23&_nc_ht=scontent.feoh14-1.fna&_nc_gid=EZGCN_jQxpwkUgpZ5OPdMA&oh=00_AfXPSWp8MW71TDwvYAm6-GR08frOG80kVMjeflduyyy5Jg&oe=689C8851",
+        caption: "Tus abrazos fueron mi hogar, tus palabras mi guía, y tu amor mi mayor regalo."
+      },
+      {
+        src: "https://scontent.feoh14-1.fna.fbcdn.net/v/t39.30808-6/462679000_10220473209299711_1582842554644990054_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=cf85f3&_nc_eui2=AeHYzWB1NmjiEZ-IO2QqRqHOiFEDSRLeav2IUQNJEt5q_X0H9UorgX0-OPSt4lKA2Me7P9-vScxopaATpBtAIs8n&_nc_ohc=Sdami8jucC4Q7kNvwEl3Oe8&_nc_oc=AdnN_jU7tmEDqiwR2VjcrcMqicgh9yWnbgIn8ZORwlBQI92Nd22fueHtb2iVK1eXmDU&_nc_zt=23&_nc_ht=scontent.feoh14-1.fna&_nc_gid=yhVkKhYmY703oa0j64YzhQ&oh=00_AfVfomiHiXBCm_T3Lysppnw0cHBwXltw8mqcYDWQYGQHYQ&oe=689C8256",
+        caption: "Cada momento contigo es un tesoro eterno que guardo en el corazón con gratitud infinita."
+      },
+      {
+        src: "https://scontent.feoh14-1.fna.fbcdn.net/v/t39.30808-6/486669983_10221731987928390_4668215684754623181_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeHN1bakdFh0FJgcBXNAYKcxoLORUDESCI-gs5FQMRIIjwGpEfwB3wUUSky275SX71fV6ovdaiUPF34spABdsuhL&_nc_ohc=UfM9S4A34ysQ7kNvwHfhb4h&_nc_oc=AdnOior2qb0KxdG2rQA-kw-InGD1UnIcGb_34KHlJUml1yKg3lPJWJea2dQASad0At8&_nc_zt=23&_nc_ht=scontent.feoh14-1.fna&_nc_gid=cfPMIr2E5mxKduR5c_yb9Q&oh=00_AfWgq5fHelP-2mPvO0fJGUEcgoRUsANrVlTy-X_pzORPrw&oe=689C811B",
+        caption: "Nunca olvidaré cómo siempre estuviste ahí, incluso cuando no lo pedía pero más lo necesitaba."
+      },
+      {
+        src: "https://scontent.feoh14-1.fna.fbcdn.net/v/t39.30808-6/503400100_10222376117191219_6308802113245662694_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=cf85f3&_nc_eui2=AeEuWw1ck4867w4BwJIT_TJTPBp2mVOiZ6E8GnaZU6JnoZYAYF2zkshhjzhyoKx5hiFOyqlajLtPdTZVitx-4sCQ&_nc_ohc=bJoo7ibO_BQQ7kNvwFIoDKl&_nc_oc=AdnFsEkA4uYByseLza95NEm4LklGhRbI__xCv20YXYu_RXB2evLyxj4ckHv6nkxRATk&_nc_zt=23&_nc_ht=scontent.feoh14-1.fna&_nc_gid=vd5hJvT5sbKEPB1CKqVgbA&oh=00_AfVZ_6udDH0pUswSXhx24WNa_D1454IM7cqf8N-JuZ2xuA&oe=689C899C",
+        caption: "Tus sonrisas me levantaban, tus consejos me dirigían, y tu amor siempre me salvaba."
+      },
+      {
+        src: "https://scontent.feoh14-1.fna.fbcdn.net/v/t1.6435-9/133246116_10214557002438237_1609327409759483761_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeGNIW_TKnb6pqj664usYOpt3e85jy5vX6zd7zmPLm9frMXxAxk9T4narqThqgfdp_0VTo_ZnY3SXJCfGHUhpjUC&_nc_ohc=fAyJ_k0KVikQ7kNvwEGLAe7&_nc_oc=Adke2h36-gq5RTvmj8l12BnGU3SiahLtknRLKpVPogfGtWNgqw48pGySFJcW5hYf4_s&_nc_zt=23&_nc_ht=scontent.feoh14-1.fna&_nc_gid=EBa7P6CebOjzUkwvnmwy2A&oh=00_AfU3yIDUSk1RYvrvNM33JU99YL19nK8Bpx915EXFBO9zCg&oe=68BE2F51",
+        caption: "Papá, eres mi ejemplo de bondad, tu legado vive en mí en cada paso que doy."
+      },
+      {
+        src: "https://scontent.feoh14-1.fna.fbcdn.net/v/t39.30808-6/462659102_10220473018374938_1226881963388371080_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=cf85f3&_nc_eui2=AeFdRlA6yu7dmVVT4qnGRJfANqGujW_3Lok2oa6Nb_cuiV2vaZpveWVpyKKaUWpuLr7jWMkxmyqrIaOpmdaSPkuY&_nc_ohc=FA_GpwWrBGQQ7kNvwHsK6Kw&_nc_oc=AdnSlaAxBz5Cz3TbdUiG3fi-P_hGfjVmyNqMjggnAqB59fvvMzR2PIQG3rm0oWVFIRk&_nc_zt=23&_nc_ht=scontent.feoh14-1.fna&_nc_gid=HcQxDi4tA1MQ6rplQmObTg&oh=00_AfW49SUxms_SWm_kVAEAfsSwEa0A9QVklm9rsUAufKhhsg&oe=689CA77B",
+        caption: "A tu lado aprendí que el amor verdadero se demuestra con acciones silenciosas y sinceras."
+      }
+    ];
+
+    const icons = [
+      "https://cdn-icons-png.flaticon.com/512/833/833472.png",
+      "https://cdn-icons-png.flaticon.com/512/744/744465.png",
+      "https://cdn-icons-png.flaticon.com/512/929/929417.png",
+      "https://cdn-icons-png.flaticon.com/512/869/869869.png",
+      "https://cdn-icons-png.flaticon.com/512/3466/3466993.png",
+      "https://cdn-icons-png.flaticon.com/512/616/616408.png",
+      "https://cdn-icons-png.flaticon.com/512/3468/3468061.png",
+      "https://cdn-icons-png.flaticon.com/512/763/763704.png"
+    ];
+
+    let current = 0;
+
+    window.onload = () => {
+      updateSlide();
+    };
+
+    function nextSlide() {
+      current = (current + 1) % photos.length;
+      updateSlide();
+    }
+
+    function updateSlide() {
+      const photo = photos[current];
+      document.getElementById("mainPhoto").src = photo.src;
+      document.getElementById("caption").innerText = photo.caption;
+      renderIcons();
+    }
+
+    function renderIcons() {
+      const frame = document.getElementById("photoFrame");
+      frame.querySelectorAll(".decor-icon").forEach(el => el.remove());
+
+      icons.forEach(src => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.className = "decor-icon";
+        img.style.top = Math.random() * 80 + "%";
+        img.style.left = Math.random() * 80 + "%";
+        frame.appendChild(img);
+      });
+    }
+  </script>
+</body>
+
